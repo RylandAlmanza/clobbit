@@ -84,6 +84,16 @@ int main() {
   bool up, right, down, left, x;
   while (!TCOD_console_is_window_closed()) {
     up = right = down = left = x = false;
+    up = TCOD_console_is_key_pressed(TCODK_UP);
+    right = TCOD_console_is_key_pressed(TCODK_RIGHT);
+    down = TCOD_console_is_key_pressed(TCODK_DOWN);
+    left = TCOD_console_is_key_pressed(TCODK_LEFT);
+    TCOD_key_t key = TCOD_console_check_for_keypress(TCOD_KEY_PRESSED);
+    if (key.vk != TCODK_NONE) {
+      if (key.c == 'x') {
+        x = true;
+      }
+    }
     while (player.animationProgress != 0) {
       TCOD_console_clear(NULL);
       draw_entity(player);
@@ -100,28 +110,10 @@ int main() {
     draw_entity(monster);
     TCOD_console_flush(NULL);
 
-    TCOD_sys_check_for_event(TCOD_EVENT_KEY_PRESS, NULL, NULL);
-    TCOD_key_t key = TCOD_console_wait_for_keypress(true);
-    if (key.pressed) {
-      if (key.vk == TCODK_UP) {
-        up = true;
-      }
-      if (key.vk == TCODK_RIGHT) {
-        right = true;
-      }
-      if (key.vk == TCODK_DOWN) {
-        down = true;
-      }
-      if (key.vk == TCODK_LEFT) {
-        left = true;
-      }
-      if (key.c == 'x') {
-        x = true;
-      }
-      reset_weapon_points();
-      player.update(&player, up, right, down, left, x);
-      monster.update(&monster);
-    }
+    usleep(100000);
+    reset_weapon_points();
+    player.update(&player, up, right, down, left, x);
+    monster.update(&monster);
   }
 
   free(weapon_points);
