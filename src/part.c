@@ -6,7 +6,7 @@
 #include "frame.h"
 
 void Part_addFrame(Part *self, char name[255], int x, int y,
-                       char character, int colorpair) {
+                       char character, TCOD_color_t color) {
   self->numberOfFrames += 1;
 
   Frame frame;
@@ -14,7 +14,7 @@ void Part_addFrame(Part *self, char name[255], int x, int y,
   frame.x = x;
   frame.y = y;
   frame.character = character;
-  frame.colorpair = colorpair;
+  frame.color = color;
 
   self->frames[self->numberOfFrames - 1] = frame;
 }

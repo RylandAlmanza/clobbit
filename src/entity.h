@@ -5,7 +5,6 @@
 #include <time.h>
 #include "orientation.h"
 #include "part.h"
-#include "cell.h"
 
 typedef struct EntityS Entity;
 
@@ -13,6 +12,7 @@ struct EntityS {
   int x;
   int y;
   int orientation;
+  int ticksSinceLastUpdate;
   char currentFrame[255];
   char currentAnimation[255];
   int animationProgress;
@@ -26,6 +26,5 @@ struct EntityS {
 };
 
 Entity construct_Entity(int x, int y, int orientation);
-Entity construct_Player(int x, int y, int orientation);
 
 #endif

@@ -1,6 +1,8 @@
 #ifndef FRAME_H_
 #define FRAME_H_
 
+#include "libtcod.h"
+
 typedef struct FrameS Frame;
 
 struct FrameS {
@@ -8,7 +10,7 @@ struct FrameS {
   int x;
   int y;
   char character;
-  int colorpair;
+  TCOD_color_t color;
 };
 
 #endif

@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include "frame.h"
+#include "libtcod.h"
 
 typedef struct PartS Part;
 
@@ -12,7 +13,7 @@ struct PartS {
   Frame frames[25];
   int numberOfFrames;
   void (*addFrame)(Part *self, char name[255], int x, int y,
-                   char character, int colorpair);
+                   char character, TCOD_color_t color);
   Frame (*getFrame)(Part *self, char *name);
 };
 
