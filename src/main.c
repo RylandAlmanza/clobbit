@@ -66,21 +66,59 @@ void draw_entity(Entity entity) {
 
 int main(int argc, char *argv[]) {
   bool real_time;
-  if (argc != 2) {
-    printf("usage: main {real-time|turn-based}\n");
-    return 0;
-  }
-  if (strcmp(argv[1], "real-time") == 0) {
-    real_time = true;
-  } else if (strcmp(argv[1], "turn-based") == 0) {
-    real_time = false;
-  } else {
-    printf("usage: main {real-time|turn-based}\n");
-    return 0;
-  }
 
   TCOD_console_init_root(50, 40, "Lobbit - Little Hunter of Big Things",
                          false, TCOD_RENDERER_OPENGL);
+  TCOD_console_set_default_background(NULL, BLACK);
+  TCOD_console_set_default_foreground(NULL, WHITE);
+  TCOD_console_set_color_control(TCOD_COLCTRL_1, RED, WHITE);
+
+  bool mode_chosen = false;
+  int mode_selected = 0;
+  while (!mode_chosen) {
+    char real_time_string[255] = "Real-time";
+    char turn_based_string[255] = "Turn-based";
+    char temp[255] = "";
+    TCOD_console_clear(NULL);
+    TCOD_console_print(NULL, 1, 1, "Choose your play style:");
+    if (mode_selected == 0) {
+      TCOD_console_put_char_ex(NULL, 1, 2, '>', WHITE, BLACK);
+      strcpy(temp, "%c");
+      strcat(temp, real_time_string);
+      strcat(temp, "%c");
+      strcpy(real_time_string, temp);
+      TCOD_console_print(NULL, 3, 2, real_time_string, TCOD_COLCTRL_1,
+                         TCOD_COLCTRL_STOP);
+      TCOD_console_print(NULL, 3, 3, turn_based_string);
+    } else {
+      TCOD_console_put_char_ex(NULL, 1, 3, '>', WHITE, BLACK);
+      strcat(temp, "%c");
+      strcat(temp, turn_based_string);
+      strcat(temp, "%c");
+      strcpy(turn_based_string, temp);
+      TCOD_console_print(NULL, 3, 2, real_time_string);
+      TCOD_console_print(NULL, 3, 3, turn_based_string, TCOD_COLCTRL_1,
+                         TCOD_COLCTRL_STOP);
+    }
+
+    TCOD_console_flush(NULL);
+    TCOD_key_t key = TCOD_console_wait_for_keypress(true);
+    if (key.pressed) {
+      if (key.vk == TCODK_UP) {
+        mode_selected -= 1;
+      }
+      if (key.vk == TCODK_DOWN) {
+        mode_selected += 1;
+      }
+      if (key.vk == TCODK_ENTER) {
+        mode_chosen = true;
+      }
+      if (mode_selected < 0) mode_selected = 1;
+      if (mode_selected > 1) mode_selected = 0;
+    }
+  }
+
+  real_time = mode_selected ? false : true;
 
   weapon_points = malloc(sizeof(Point));
 
