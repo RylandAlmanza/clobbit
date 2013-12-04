@@ -11,6 +11,10 @@
 Point *weapon_points;
 int number_of_weapon_points;
 
+int random_between(int min, int max) {
+  return rand() % (max - min + 1) + min;
+}
+
 void reset_weapon_points() {
   number_of_weapon_points = 0;
   Point *temp = realloc(weapon_points, sizeof(Point));
@@ -58,13 +62,23 @@ void draw_entity(Entity entity) {
                                BLACK);
     }
   }
-}
+}  
 
-int random_between(int min, int max) {
-  return rand() % (max - min + 1) + min;
-}
+int main(int argc, char *argv[]) {
+  bool real_time;
+  if (argc != 2) {
+    printf("usage: main {real-time|turn-based}\n");
+    return 0;
+  }
+  if (strcmp(argv[1], "real-time") == 0) {
+    real_time = true;
+  } else if (strcmp(argv[1], "turn-based") == 0) {
+    real_time = false;
+  } else {
+    printf("usage: main {real-time|turn-based}\n");
+    return 0;
+  }
 
-int main() {
   TCOD_console_init_root(50, 40, "Lobbit - Little Hunter of Big Things",
                          false, TCOD_RENDERER_OPENGL);
 
@@ -84,16 +98,20 @@ int main() {
   bool up, right, down, left, x;
   while (!TCOD_console_is_window_closed()) {
     up = right = down = left = x = false;
-    up = TCOD_console_is_key_pressed(TCODK_UP);
-    right = TCOD_console_is_key_pressed(TCODK_RIGHT);
-    down = TCOD_console_is_key_pressed(TCODK_DOWN);
-    left = TCOD_console_is_key_pressed(TCODK_LEFT);
-    TCOD_key_t key = TCOD_console_check_for_keypress(TCOD_KEY_PRESSED);
-    if (key.vk != TCODK_NONE) {
-      if (key.c == 'x') {
-        x = true;
+    if (real_time) {
+      up = TCOD_console_is_key_pressed(TCODK_UP);
+      right = TCOD_console_is_key_pressed(TCODK_RIGHT);
+      down = TCOD_console_is_key_pressed(TCODK_DOWN);
+      left = TCOD_console_is_key_pressed(TCODK_LEFT);
+      TCOD_key_t key = TCOD_console_check_for_keypress(TCOD_KEY_PRESSED);
+      
+      if (key.vk != TCODK_NONE) {
+        if (key.c == 'x') {
+          x = true;
+        }
       }
     }
+
     while (player.animationProgress != 0) {
       TCOD_console_clear(NULL);
       draw_entity(player);
@@ -110,10 +128,34 @@ int main() {
     draw_entity(monster);
     TCOD_console_flush(NULL);
 
-    usleep(100000);
-    reset_weapon_points();
-    player.update(&player, up, right, down, left, x);
-    monster.update(&monster);
+    if (real_time) {
+      usleep(100000);
+      reset_weapon_points();
+      player.update(&player, up, right, down, left, x);
+      monster.update(&monster);
+    } else {
+      TCOD_key_t key = TCOD_console_wait_for_keypress(true);
+      if (key.pressed) {
+        if (key.vk == TCODK_UP) {
+          up = true;
+        }
+        if (key.vk == TCODK_RIGHT) {
+          right = true;
+        }
+        if (key.vk == TCODK_DOWN) {
+          down = true;
+        }
+        if (key.vk == TCODK_LEFT) {
+          left = true;
+        }
+        if (key.c == 'x') {
+          x = true;
+        }
+        reset_weapon_points();
+        player.update(&player, up, right, down, left, x);
+        monster.update(&monster);
+      }
+    }
   }
 
   free(weapon_points);
